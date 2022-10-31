@@ -4,6 +4,11 @@
 Goal is to render a map containing all of a user's Strava activities with
 and easy way to click on each one and go the its detail page.
 
+### Running locally:
+1. `npx prisma db push`
+2. `npm run dev` and open the website and login with strava
+3. `npm run sync` to sync all activities
+
 **TODO:**
 
 - [ ] Sign in with Strava
