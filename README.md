@@ -1,12 +1,17 @@
 # Strava activity viewer
 ------
 
-Goal is to render a map containing all of a user's Strava activities with
-and easy way to click on each one and go the its detail page.
+This is a simple app that lets a Strava user view all of their activities on a single map. Then when you click on a path, you can see all the activities that passed through that point.
+<img width="1920" alt="Screen Shot 2022-11-02 at 2 32 59 PM" src="https://user-images.githubusercontent.com/1312391/199612226-d79a4571-3354-495c-aa3f-6074842de4e2.png">
+
+
 
 ### Running locally:
 1. `npx prisma db push`
 2. `npm run dev` and open the website and login with strava
+3. Load the app in your browser.
+4. Click `sign in` and auth with Strava
+5. Click `sync` and wait for your activities to load.
 
 **TODO:**
 
