@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
     StravaProvider({
       clientId: env.STRAVA_CLIENT_ID,
       clientSecret: env.STRAVA_CLIENT_SECRET,
-      authorization: { params: { scope: 'activity:read' } },
+      authorization: { params: { scope: 'activity:read_all' } },
       // Drop the nested athlete object
       // https://github.com/nextauthjs/next-auth/discussions/5279
       token: {
