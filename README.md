@@ -16,19 +16,20 @@ This is a simple app that lets a Strava user view all of their activities on a s
 
 **TODO:**
 
-- [ ] Sign in with Strava
+- [x] Sign in with Strava
 - [x] Add a script to sync a user's activities
     - [ ] Sync all activities, not just public ones
 - [ ] Automatically run the task to sync the activities when a user logs in via
       a serverless function
       - Probably can't use vercel personal plan do to 10s timeout?
-- [ ] Add a google maps element and add all the activity polylines
-  - [ ] Add a custom click popup to the map that shows details on the activities
+- [x] Add a google maps element and add all the activity polylines
+  - [x] Add a custom click popup to the map that shows details on the activities
 - [ ] Support filtering by date
 - [ ] Include activity photos
 - [ ] Look into MapBox/Open street map to show 3D map
 - [ ] Move db to Planetscale or postgres?
 - [ ] Deploy to vercel
+- [ ] Support deleting all your user data
 
 ----
 
