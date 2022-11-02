@@ -7,11 +7,12 @@ This is a simple app that lets a Strava user view all of their activities on a s
 
 
 ### Running locally:
-1. `npx prisma db push`
-2. `npm run dev` and open the website and login with strava
-3. Load the app in your browser.
-4. Click `sign in` and auth with Strava
-5. Click `sync` and wait for your activities to load.
+1. Create an `env` file based off of `env.example` and fill in all the values. Requires having a Strava app and a Google maps api key.
+2. `npx prisma db push`
+3. `npm run dev` and open the website and login with strava
+4. Load the app in your browser.
+5. Click `sign in` and auth with Strava
+6. Click `sync` and wait for your activities to load.
 
 **TODO:**
 
