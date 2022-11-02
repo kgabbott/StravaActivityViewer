@@ -99,30 +99,18 @@ function ViewerComponent({ syncing }: { syncing: boolean }) {
     staleTime: Infinity,
     enabled: false
   })
-
-  const [updated, setUpdated] = useState(false)
-  const [center, setCenter] = useState(null as null | { lat: number, lng: number })
+  const [needToFetch, setNeedToFetch] = useState(true)
 
   useEffect(() => {
-    if (!center) {
-      navigator.geolocation.getCurrentPosition(
-        function (position) {
-          setCenter({ lat: position.coords.latitude, lng: position.coords.longitude });
-        },
-        function error() {
-          setCenter(DEFAULT_CENTER)
-        }
-      )
-    }
-    if (!syncing && !updated) {
+    if (!syncing && needToFetch) {
       if (stats.isFetching || activities.isFetching) return
-      setUpdated(true)
+      setNeedToFetch(false)
       stats.refetch()
       activities.refetch()
     } else if (syncing) {
-      setUpdated(false)
+      setNeedToFetch(true)
     }
-  }, [syncing, updated, activities, stats, center])
+  }, [syncing, needToFetch, activities, stats])
 
   return (
     <div className="h-[calc(100vh-3rem)] w-full relative">
@@ -153,26 +141,33 @@ function ViewerComponent({ syncing }: { syncing: boolean }) {
         apiKey={env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''}
         libraries={['geometry']}
       >
-        <MapComponent center={center || DEFAULT_CENTER} zoom={11} activities={activities.data || []} />
+        <MapComponent activities={activities.data || []} />
       </Wrapper>
     </div>
   )
 }
 
-function MapComponent({
-  center,
-  zoom,
-  activities
-}: {
-  center: { lat: number, lng: number },
-  zoom: number,
-  activities: Activity[]
-}) {
+function MapComponent({ activities }: { activities: Activity[] }) {
   const map = useRef(null);
   const infoWindow = useMemo(() => new google.maps.InfoWindow(), [])
   const [mapObject, setMapObject] = useState(null as google.maps.Map | null)
   const [activityData, setActivityData] = useState([] as { latLngs: [number, number][], activity: Activity }[])
   const [seenActivities, setSeenActivities] = useState(new Set<bigint>())
+
+  const [center, setCenter] = useState(DEFAULT_CENTER)
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        setCenter({ lat: position.coords.latitude, lng: position.coords.longitude })
+      },
+    )
+  }, [])
+
+  useEffect(() => {
+    mapObject?.setCenter(center)
+  }, [center, mapObject])
+
 
   useEffect(() => {
     if (!map.current) return
@@ -180,12 +175,11 @@ function MapComponent({
       setActivityData([])
       setSeenActivities(new Set())
       setMapObject(new google.maps.Map(map.current, {
-        center,
-        zoom,
+        center: DEFAULT_CENTER,
+        zoom: 11,
       }))
       return
     }
-    mapObject.setCenter(center)
     activities.map(activity => {
       if (seenActivities.has(activity.id)) return
       seenActivities.add(activity.id)
@@ -242,7 +236,7 @@ function MapComponent({
         })
       })
     })
-  }, [map, center, zoom, infoWindow, activities, mapObject, activityData, seenActivities]);
+  }, [map, infoWindow, activities, mapObject, activityData, seenActivities]);
 
   return <div ref={map} id="map" className="w-full h-full" />;
 }
