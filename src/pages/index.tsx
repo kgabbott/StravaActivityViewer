@@ -154,27 +154,13 @@ function MapComponent({ activities }: { activities: Activity[] }) {
   const [activityData, setActivityData] = useState([] as { latLngs: [number, number][], activity: Activity }[])
   const [seenActivities, setSeenActivities] = useState(new Set<bigint>())
 
-  const [center, setCenter] = useState(DEFAULT_CENTER)
-
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        setCenter({ lat: position.coords.latitude, lng: position.coords.longitude })
-      },
-    )
-  }, [])
-
-  useEffect(() => {
-    mapObject?.setCenter(center)
-  }, [center, mapObject])
-
-
   useEffect(() => {
     if (!map.current) return
     if (mapObject == null) {
       setActivityData([])
       setSeenActivities(new Set())
       setMapObject(new google.maps.Map(map.current, {
+        // TODO: Get center from athlete object or from first activity ??
         center: DEFAULT_CENTER,
         zoom: 11,
       }))
