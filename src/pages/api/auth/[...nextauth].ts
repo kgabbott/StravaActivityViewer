@@ -5,7 +5,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
-import type { Athlete } from "@prisma/client";
 
 
 export const authOptions: NextAuthOptions = {
