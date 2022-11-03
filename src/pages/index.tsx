@@ -188,7 +188,7 @@ function MapComponent({ activities }: { activities: Activity[] }) {
             point,
             turf.lineString(val.latLngs),
             { units: 'miles' }
-          ) < .1
+          ) < .01
         }).sort((a, b) => {
           // Need to return -1/0/1 since b-a is a bigint and sort doesn't
           // support that,
