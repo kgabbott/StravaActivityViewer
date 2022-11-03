@@ -17,6 +17,7 @@ async function refreshToken(account: Account) {
   }
   await strava.oauth.refreshToken(account.refresh_token)
     .then(async (code) => {
+      account.refresh_token = code.access_token
       await prisma?.account.update({
         where: {
           id: account.id,
