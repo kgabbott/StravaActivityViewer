@@ -53,7 +53,7 @@ export async function syncAthlete(account: Account) {
       break
     }
     await strava.athlete.listActivities(
-      { 'access_token': account.access_token, page, per_page: 50 },
+      { 'access_token': accessToken, page, per_page: 50 },
     ).then(activities => {
       if (!activities.length) {
         finished = true
