@@ -10,14 +10,13 @@ strava.config({
 
 })
 
-async function refreshToken(account: Account) {
+async function refreshToken(account: Account): Promise<string | null> {
   if (!account.refresh_token) {
     console.error('No refresh token found for athlete ', account.providerAccountId)
-    return
+    return null
   }
-  await strava.oauth.refreshToken(account.refresh_token)
+  return await strava.oauth.refreshToken(account.refresh_token)
     .then(async (code) => {
-      account.refresh_token = code.access_token
       await prisma?.account.update({
         where: {
           id: account.id,
@@ -27,33 +26,30 @@ async function refreshToken(account: Account) {
           expires_at: code.expires_at
         },
       })
+      return code.access_token
     })
     .catch(async (e) => {
       console.error('Error refreshing token for athlete ', account.providerAccountId)
-      await prisma?.account.update({
-        where: {
-          id: account.id,
-        },
-        data: {
-          access_token: null,
-          expires_at: null
-        },
-      })
+      return null
     })
 }
 
 export async function syncAthlete(account: Account) {
-  console.log('Syncing activities for athlete ', account.providerAccountId)
+  if (account.provider !== 'strava') {
+    console.error('Trying to sync activities for non-strava account', account.providerAccountId)
+  }
+  console.log('Syncing activities for athlete', account.providerAccountId)
   const latest = await prisma?.activity.findFirst({
     where: { accountId: account.id },
     orderBy: { id: 'desc' }
   })
   const latestId = latest ? latest.id : 0
+  let accessToken = account.access_token
   let page = 1
   let newActivities = [] as Activity[]
   let finished = false
   while (!finished) {
-    if (!account.access_token) {
+    if (!accessToken) {
       break
     }
     await strava.athlete.listActivities(
@@ -95,12 +91,14 @@ export async function syncAthlete(account: Account) {
         err.error.errors[0].code === 'invalid'
       ) {
         console.log('Invalid access token, attempting to refresh.')
-        await refreshToken(account)
-      } else {
-        console.error('Unknown error encountered, exiting.')
-        finished = true
-        newActivities = []
+        accessToken = await refreshToken(account)
+        if (accessToken) {
+          return
+        }
       }
+      console.error('Unknown error encountered, exiting.')
+      finished = true
+      newActivities = []
     })
   }
   // TODO: createMany isn't supported by SQLite. Move to this once we move to 
